@@ -77,10 +77,8 @@ async def createclass(interaction: discord.Interaction, class_name: str):
         save_invite_mapping(invite.code, role.id)
 
         await interaction.response.send_message(
-            f"✅ Created role `{role_name}`
-"
-            f"✅ Created channel <#{channel.id}>
-"
+            f"✅ Created role `{role_name}`\n"
+            f"✅ Created channel <#{channel.id}>\n"
             f"🔗 Invite link: https://discord.gg/{invite.code}",
             ephemeral=True
         )
