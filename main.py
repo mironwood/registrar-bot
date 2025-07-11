@@ -8,8 +8,7 @@ import re
 
 load_dotenv()
 TOKEN = os.getenv("TOKEN")
-DATABASE_URL = "postgres://postgres:WlKVpRYBOkxCqmGHcGNlOWORJRjgxLYB@crossover.proxy.rlwy.net:29401/railway"
-print("DATABASE_URL is:", DATABASE_URL)
+DATABASE_URL = os.getenv("DATABASE_URL")
 
 intents = discord.Intents.default()
 intents.members = True
