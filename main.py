@@ -102,7 +102,19 @@ async def joinclass(interaction: discord.Interaction, code: str):
 
 @bot.event
 async def on_member_join(member):
-    # Optional: you can re-add invite tracking later if needed
-    pass
+    guild = member.guild
+    try:
+        invites = await guild.invites()
+        for invite in invites:
+            role_id = get_role_id_from_code(invite.code)
+            if role_id:
+                role = guild.get_role(role_id)
+                if role:
+                    await member.add_roles(role)
+                    print(f"🎉 Assigned role '{role.name}' to {member.name} via invite {invite.code}")
+                    return
+        print(f"⚠️ No matching invite code found for {member.name}")
+    except Exception as e:
+        print(f"❌ Error in on_member_join: {e}")
 
 bot.run(TOKEN)
