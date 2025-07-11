@@ -53,6 +53,7 @@ async def on_ready():
 
 @tree.command(name="createclass", description="Create a class role, channel, and invite link")
 @app_commands.describe(class_name="The name of the class (e.g. Level 2 - Tuesdays 6PM)")
+@app_commands.checks.has_permissions(administrator=True)
 async def createclass(interaction: discord.Interaction, class_name: str):
     try:
         guild = interaction.guild
@@ -76,12 +77,24 @@ async def createclass(interaction: discord.Interaction, class_name: str):
 
         save_invite_mapping(invite.code, role.id)
 
-        await interaction.response.send_message(
-            f"✅ Created role `{role_name}`\n"
-            f"✅ Created channel <#{channel.id}>\n"
-            f"🔗 Invite link: https://discord.gg/{invite.code}",
-            ephemeral=True
+        # Format response
+        response = (
+            f"We’d love to have you join the Curious Comedy Community Discord server!\n\n"
+            f"**If you’re new to the server:**\n"
+            f"Click this invite link to join:\n"
+            f"🔗 https://discord.gg/{invite.code}\n"
+            f"When you join using that link, you’ll automatically be given access to your class’s private channel.\n\n"
+            f"**If you’re already a server member:**\n"
+            f"1. Open the Discord server.\n"
+            f"2. In any text channel, type the following command:\n"
+            f"`/joinclass {invite.code}`\n"
+            f"This will manually give you access to your class’s private channel.\n\n"
+            f"Your class is titled **{class_name}** and will appear under the “CLASSES” section of the server.\n\n"
+            f"If you run into any issues, reach out to your instructor or one of the server moderators. We’re glad you’re here!"
         )
+
+        await interaction.response.send_message(response, ephemeral=True)
+
     except Exception as e:
         await interaction.response.send_message(f"❌ Error: {e}", ephemeral=True)
         print(f"Error in /createclass: {e}")
@@ -94,7 +107,7 @@ async def joinclass(interaction: discord.Interaction, code: str):
         role = interaction.guild.get_role(role_id)
         if role:
             await interaction.user.add_roles(role)
-            await interaction.response.send_message(f"🎉 You've been added to **{role.name}**!", ephemeral=True)
+            await interaction.response.send_message(f"You've been added to **{role.name}**!", ephemeral=True)
         else:
             await interaction.response.send_message("❌ Role not found.", ephemeral=True)
     else:
@@ -102,19 +115,6 @@ async def joinclass(interaction: discord.Interaction, code: str):
 
 @bot.event
 async def on_member_join(member):
-    guild = member.guild
-    try:
-        invites = await guild.invites()
-        for invite in invites:
-            role_id = get_role_id_from_code(invite.code)
-            if role_id:
-                role = guild.get_role(role_id)
-                if role:
-                    await member.add_roles(role)
-                    print(f"🎉 Assigned role '{role.name}' to {member.name} via invite {invite.code}")
-                    return
-        print(f"⚠️ No matching invite code found for {member.name}")
-    except Exception as e:
-        print(f"❌ Error in on_member_join: {e}")
+    pass  # Invite tracking not used currently
 
 bot.run(TOKEN)
