@@ -9,6 +9,7 @@ import re
 load_dotenv()
 TOKEN = os.getenv("TOKEN")
 DATABASE_URL = os.getenv("DATABASE_URL")
+print("DATABASE_URL is:", DATABASE_URL)
 
 intents = discord.Intents.default()
 intents.members = True
